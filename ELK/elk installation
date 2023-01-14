@@ -55,14 +55,15 @@ sudo vi /etc/kibana/kibana.yml
 
 Uncomment below lines
 #server.port: 5601
-#server.host: "your-hostname"
+#server.host: 0.0.0.0
 #elasticsearch.hosts: ["http://localhost:9200"]
 
 sudo systemctl start kibana
 
 sudo systemctl enable kibana
 
-http://<server_ip>:5601
+http://<server_ip>:5601     >> if page not comes then run - sudo systemctl restart kibana
+
 --------------------------------------Logstash------------------------------------------
 # Install Logstash
 wget https://artifacts.elastic.co/downloads/logstash/logstash-8.4.3-linux-x86_64.tar.gz   
