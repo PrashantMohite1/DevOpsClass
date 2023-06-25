@@ -1,3 +1,6 @@
+very imp note :- dont run following commands using bash script it created problem and installation failed 
+
+
 Both on master and slave - with root
 
 sudo su
