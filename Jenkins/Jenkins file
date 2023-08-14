@@ -1,0 +1,114 @@
+**************************** DECLARATIVE PIPELINE ************************************
+
+pipeline {
+    agent any
+    
+    environment {
+        JAVA_HOME = '/path/to/java'  // Set your Java home path
+        MAVEN_HOME = '/path/to/maven'  // Set your Maven home path
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                sh "${MAVEN_HOME}/bin/mvn clean compile"
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                sh "${MAVEN_HOME}/bin/mvn test"
+            }
+        }
+        
+        stage('Deploy') {
+            when {
+                expression { currentBuild.resultIsBetterOrEqualTo('SUCCESS') }
+            }
+            steps {
+                sh "${MAVEN_HOME}/bin/mvn deploy"
+            }
+        }
+    }
+    
+    post {
+        always {
+            junit '**/target/test-reports/*.xml'
+        }
+    }
+}
+
+
+************************* SCRIPTED PIPELINE ***********************************************
+
+node {
+    def javaHome = '/path/to/java'  // Set your Java home path
+    def mavenHome = '/path/to/maven'  // Set your Maven home path
+
+    stage('Checkout') {
+        checkout scm
+    }
+
+    stage('Build') {
+        try {
+            sh "${mavenHome}/bin/mvn clean compile"
+        } catch (Exception ex) {
+            currentBuild.result = 'FAILURE'
+            throw ex
+        }
+    }
+
+    stage('Test') {
+        try {
+            sh "${mavenHome}/bin/mvn test"
+        } catch (Exception ex) {
+            currentBuild.result = 'FAILURE'
+            throw ex
+        }
+    }
+
+    stage('Deploy') {
+        if (currentBuild.resultIsBetterOrEqualTo('SUCCESS')) {
+            try {
+                sh "${mavenHome}/bin/mvn deploy"
+            } catch (Exception ex) {
+                currentBuild.result = 'FAILURE'
+                throw ex
+            }
+        }
+    }
+
+    post {
+        always {
+            junit '**/target/test-reports/*.xml'
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
